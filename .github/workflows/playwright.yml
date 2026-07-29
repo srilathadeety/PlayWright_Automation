@@ -5,6 +5,11 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
+  # Run once a week (Sunday 00:00 UTC). Adjust cron as needed (UTC timezone).
+  schedule:
+    - cron: '0 0 * * 0'
+  # Allow manual runs from the Actions UI
+  workflow_dispatch: {}
 
 jobs:
   test:
