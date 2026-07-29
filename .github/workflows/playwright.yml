@@ -32,7 +32,8 @@ jobs:
         run: npm ci
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        # Run the browser installer without system dependency installation so it doesn't require root in the container
+        run: npx playwright install
 
       - name: Run Playwright tests
         run: npx playwright test
