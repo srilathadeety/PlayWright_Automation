@@ -7,6 +7,11 @@ export class HomePage {
     this.page = page;
   }
 
+  async expectPageTitle() {
+    const pageTitle = await this.page.title();
+    expect(pageTitle).toBe('Swag Labs');
+  }
+
   async expectAppLogoVisible() {
     await expect(this.page.locator('div.app_logo')).toBeVisible();
   }

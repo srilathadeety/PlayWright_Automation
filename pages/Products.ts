@@ -7,6 +7,13 @@ export class Products {
     this.page = page;
   }
 
+  async removeItemIfVisible(dataTest: string) {
+    const removeBtn = this.page.locator(`button[data-test="${dataTest}"]`);
+    if (await removeBtn.isVisible()) {
+      await removeBtn.click();
+    }
+  }
+
   async addToCartByDataTest(dataTest: string) {
     const addToCartBtn = this.page.locator(`button[data-test="${dataTest}"]`);
     await expect(addToCartBtn).toBeVisible();

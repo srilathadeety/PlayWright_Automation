@@ -10,7 +10,17 @@ export class LoginPage {
     this.page = page;
   }
 
-  async login(username: string, password: string) {
+  async StandardUser_Login() {
+    const username = process.env.SAUCE_DEMO_STANDARD_USER;
+    const password = process.env.SAUCE_DEMO_PASS;
+
+    if (!username || !password) {
+      throw new Error(
+        "SAUCE_DEMO_STANDARD_USER and SAUCE_DEMO_PASS environment variables must be set",
+      );
+    }
+
+    await this.page.goto("/");
     await this.page.fill(this.usernameInput, username);
     await this.page.fill(this.passwordInput, password);
     await this.page.click(this.loginButton);

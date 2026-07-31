@@ -62,10 +62,13 @@ export class YourCart {
     await this.page.click(`#${removeButtonId}`);
   }
 
-  async removeItemIfVisible(removeButtonId: string) {
-    const removeBtn = this.page.locator(`#${removeButtonId}`);
-    if (await removeBtn.isVisible()) {
-      await removeBtn.click();
-    }
+  async expectRemoveButtonVisible(dataTest: string) {
+    await expect(this.page.locator(`button[data-test="${dataTest}"]`)).toBeVisible();
+  }
+
+  async clickCheckoutButton() {
+    const checkoutButton = this.page.locator('button[data-test="checkout"]');
+    await expect(checkoutButton).toBeVisible();
+    await checkoutButton.click();
   }
 }
