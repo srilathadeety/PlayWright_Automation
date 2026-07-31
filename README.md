@@ -1,67 +1,97 @@
 # DemoSite Automation — Playwright
 
-Playwright-based end-to-end tests for the Sauce Demo sample site. This repo demonstrates a small POM-style test suite, CI integration, and simple utilities for adding/removing items from the cart.
+This project is a Playwright-based end-to-end automation suite for the Sauce Demo demo site. It is structured around the Page Object Model (POM) pattern so test cases stay readable, reusable, and easier to maintain.
 
-**Contents**
-- tests/: Playwright test files
-- pages/: Page Object Model classes (LoginPage, HomePage, Products, YourCart)
-- playwright.config.ts: Playwright configuration (loads .env)
+The suite exercises the main user journeys for login, product browsing, cart validation, checkout information entry, checkout overview, and order completion.
+
+## Project structure
+
+- `tests/` — Playwright spec files that define end-to-end scenarios.
+- `pages/` — Page Object Model classes that encapsulate page actions and assertions.
+- `playwright.config.ts` — Playwright configuration and test runtime settings.
+- `.env` — environment-specific values such as the app base URL and test credentials.
+
+## Current test specs
+
+### 1. `tests/Add_Remove_From_Cart.spec.ts`
+A cart-focused flow that verifies product add/remove behavior and cart interactions.
+
+### 2. `tests/Buy_Products.spec.ts`
+A product purchase flow that captures product details, adds multiple products to the cart, verifies the cart contents, and completes the checkout journey.
+
+### 3. `tests/SauceDemo_StrdUsr.spec.ts`
+A standard-user login journey used to verify the basic login and landing-page experience.
+
+## Page Object Model files
+
+- `pages/LoginPage.ts` — handles login navigation and standard user authentication.
+- `pages/HomePage.ts` — verifies the home/products page title and core visible UI elements.
+- `pages/Products.ts` — product discovery and cart interaction helpers such as add/remove actions and detail extraction.
+- `pages/YourCart.ts` — cart page behaviors, item verification, and checkout button actions.
+- `pages/CheckOut.ts` — checkout information page helpers for entering name and postal code values and continuing to the next step.
+- `pages/CheckOut_Overview.ts` — checkout overview assertions, subtotal verification, and finish button actions.
+- `pages/CheckOut_Complete.ts` — confirmation page helper for verifying the order completion screen.
 
 ## Prerequisites
-- Node.js 18+ (tested with Node 24)
+
+- Node.js 18+
 - npm
 
 ## Setup
-1. Install dependencies:
+
+1. Install project dependencies:
 
 ```bash
 npm ci
 ```
 
-2. (Optional) Install Playwright browsers locally:
+2. Install Playwright browsers if needed:
 
 ```bash
 npx playwright install
 ```
 
-3. Copy and populate `.env` at project root with at least:
+3. Create a local `.env` file in the project root with values similar to:
 
-```
+```env
 BASE_URL=https://www.saucedemo.com
 SAUCE_DEMO_STANDARD_USER=standard_user
 SAUCE_DEMO_PASS=secret_sauce
 ```
 
 ## Running tests
-- Run the full suite (headless):
+
+Run the full suite:
 
 ```bash
 npx playwright test
 ```
 
-- Run a single spec (headed):
+Run a single spec in headed mode:
 
 ```bash
-npx playwright test tests/Add_Remove_From_Cart.spec.ts --headed
+npx playwright test tests/Buy_Products.spec.ts --headed
 ```
 
-- Generate HTML report after run:
+Generate the HTML report:
 
 ```bash
 npx playwright show-report
 ```
 
-## Test patterns & helpers
-- Tests use a Page Object Model under `pages/`.
-- Shared data-test identifiers are centralized in spec files where helpful (e.g. `BACKPACK_ADD_TO_CART`).
+## Notes on the implementation
 
-## CI (GitHub Actions)
-- Workflow: `.github/workflows/playwright.yml` runs on `push`, `pull_request` and weekly via `schedule`.
-- Secrets required in Actions: `SAUCE_DEMO_STANDARD_USER`, `SAUCE_DEMO_PASS` (set in repository Secrets).
+- The tests are written using Playwright's `test` runner.
+- Page interactions are intentionally centralized inside page object classes.
+- The project uses stable selectors such as `data-test` and `id` attributes where appropriate.
+- Assertions are done with Playwright `expect` to make the suite resilient and readable.
 
-## Tips
-- Prefer `data-test` selectors where available for stable tests.
-- Avoid fixed sleeps; use Playwright `expect` and locator conditions.
+## CI
 
-If you'd like, I can add a CONTRIBUTING section, badge, or a quick troubleshooting guide next.
+The repository includes GitHub Actions support for running the Playwright suite in CI.
+
+Recommended repository secrets:
+
+- `SAUCE_DEMO_STANDARD_USER`
+- `SAUCE_DEMO_PASS`
 

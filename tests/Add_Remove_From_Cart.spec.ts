@@ -8,39 +8,30 @@ const BACKPACK_ADD_TO_CART = 'add-to-cart-sauce-labs-backpack';
 const BACKPACK_REMOVE = 'remove-sauce-labs-backpack';
 
 test("Verify title", async ({ page }) => {
-  await page.goto("/");
-  const pageTitle = await page.title();
-  console.log(pageTitle);
-  expect(pageTitle).toBe("Swag Labs");
-
-  const username = process.env.SAUCE_DEMO_STANDARD_USER;
-  const password = process.env.SAUCE_DEMO_PASS;
-
-  if (!username || !password) {
-    throw new Error(
-      "SAUCE_DEMO_STANDARD_USER and SAUCE_DEMO_PASS environment variables must be set",
-    );
-  }
-
+  // Login as the standard user and verify the page title.
   const loginPage = new LoginPage(page);
-  await loginPage.login(username, password);
+  await loginPage.StandardUser_Login();
 
+  // Confirm the home page loaded successfully.
   const homePage = new HomePage(page);
+  await homePage.expectPageTitle();
   await homePage.expectAppLogoVisible();
   await homePage.expectShoppingCartLinkVisible();
 
+  // Ensure the cart is clean before adding a new item.
   const yourCart = new YourCart(page);
   const initialCartCount = await yourCart.getInitialCartCount();
 
-  await yourCart.removeItemIfVisible(BACKPACK_REMOVE);
-
   const products = new Products(page);
+  await products.removeItemIfVisible(BACKPACK_REMOVE);
+
+  // Capture product details before adding the item to cart.
   const details = await products.ProductDetails(BACKPACK_ADD_TO_CART);
-  // store values for later comparison (no immediate assertions)
   const savedProductName = details.textcontent;
   const savedProductDesc = details.prod_details;
   const savedProductPrice = details.price;
 
+  // Add the backpack to the cart and verify the count increments.
   await products.addToCartByDataTest(BACKPACK_ADD_TO_CART);
 
   const cartCountAfterAdd = await yourCart.getCartCount();
@@ -48,9 +39,8 @@ test("Verify title", async ({ page }) => {
 
   await products.expectRemoveButtonVisible(BACKPACK_REMOVE);
 
+  // Open the cart and verify the item details.
   await yourCart.clickCartLink();
-
-  // verify the cart page item details match the product details we saved earlier
   await yourCart.verifyCartItemDetails(
     savedProductName,
     savedProductDesc,
@@ -58,8 +48,11 @@ test("Verify title", async ({ page }) => {
     BACKPACK_REMOVE,
   );
 
-  // remove the item and verify the cart count returns to initial
-  await yourCart.removeItem(BACKPACK_REMOVE);
-  await page.waitForTimeout(5000);
+  // Remove the item from cart and verify the count returns to the initial value.
+  await products.removeItemIfVisible(BACKPACK_REMOVE);
+  const cartCountAfterRemove = await yourCart.getCartCount();
+  expect(cartCountAfterRemove).toBe(initialCartCount);
 
+  // Wait briefly for visual verification when running headed.
+  await page.waitForTimeout(5000);
 });

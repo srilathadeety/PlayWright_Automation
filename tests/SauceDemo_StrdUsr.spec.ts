@@ -8,17 +8,8 @@ test("Verify title", async ({ page }) => {
   console.log(pageTitle);
   expect(pageTitle).toBe("Swag Labs");
 
-  const username = process.env.SAUCE_DEMO_STANDARD_USER;
-  const password = process.env.SAUCE_DEMO_PASS;
-
-  if (!username || !password) {
-    throw new Error(
-      "SAUCE_DEMO_STANDARD_USER and SAUCE_DEMO_PASS environment variables must be set",
-    );
-  }
-
   const loginPage = new LoginPage(page);
-  await loginPage.login(username, password);
+  await loginPage.StandardUser_Login();
 
   const homePage = new HomePage(page);
   await homePage.expectAppLogoVisible();
