@@ -6,9 +6,10 @@ The suite exercises the main user journeys for login, product browsing, cart val
 
 ## Project structure
 
-- `tests/` — Playwright spec files that define end-to-end scenarios.
+- `tests/` — Playwright spec files and shared test support such as the fixture module.
 - `pages/` — Page Object Model classes that encapsulate page actions and assertions.
-- `playwright.config.ts` — Playwright configuration and test runtime settings.
+- `test-data.ts` — shared product and test constant values used by multiple specs.
+- `playwright.config.ts` — Playwright configuration, parallel settings, and failure artifact capture.
 - `.env` — environment-specific values such as the app base URL and test credentials.
 
 ## Current test specs
@@ -21,6 +22,11 @@ A product purchase flow that captures product details, adds multiple products to
 
 ### 3. `tests/SauceDemo_StrdUsr.spec.ts`
 A standard-user login journey used to verify the basic login and landing-page experience.
+
+## Shared test support
+
+- `tests/fixtures.ts` — lightweight Playwright fixture wrapper that supplies common page object instances to specs.
+- `test-data.ts` — central repository for shared product action IDs and reusable constants.
 
 ## Page Object Model files
 
@@ -79,12 +85,25 @@ Generate the HTML report:
 npx playwright show-report
 ```
 
+## Parallel execution
+
+- Local runs are configured to execute test files in parallel for faster feedback.
+- CI runs are intentionally limited to a single worker for stability.
+- You can override the worker count from the CLI, for example:
+
+```bash
+npx playwright test --workers=2
+```
+
 ## Notes on the implementation
 
 - The tests are written using Playwright's `test` runner.
 - Page interactions are intentionally centralized inside page object classes.
+- Shared setup is now exposed through Playwright fixtures to reduce repeated object construction in specs.
+- Shared product data is centralized in `test-data.ts` to avoid duplication across the suite.
 - The project uses stable selectors such as `data-test` and `id` attributes where appropriate.
 - Assertions are done with Playwright `expect` to make the suite resilient and readable.
+- Failure screenshots and videos are enabled through the Playwright config for easier debugging.
 
 ## CI
 
