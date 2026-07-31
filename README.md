@@ -61,8 +61,8 @@ npx playwright install
 
 ```env
 BASE_URL=https://www.saucedemo.com
-SAUCE_DEMO_STANDARD_USER=standard_user
-SAUCE_DEMO_PASS=secret_sauce
+SAUCE_DEMO_STANDARD_USER=<your-standard-user>
+SAUCE_DEMO_PASS=<your-password>
 ```
 
 ## Running tests
