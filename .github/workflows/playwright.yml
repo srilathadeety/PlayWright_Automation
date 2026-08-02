@@ -72,6 +72,16 @@ jobs:
           retention-days: 14
         continue-on-error: true
 
+      - name: Upload Allure raw results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results/
+          if-no-files-found: warn
+          retention-days: 14
+        continue-on-error: true
+
       - name: Upload Playwright HTML report
         uses: actions/upload-artifact@v4
         if: always()
@@ -79,3 +89,10 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
+
+      - name: Add artifact links to job summary
+        if: always()
+        run: |
+          echo "## 📦 CI Artifacts" >> "$GITHUB_STEP_SUMMARY"
+          echo "- [Open the GitHub Actions run page](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Download the uploaded artifacts from that run page: Allure report, Allure raw results, and Playwright HTML report." >> "$GITHUB_STEP_SUMMARY"
