@@ -46,6 +46,12 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test
 
+      - name: Set up Java (required by Allure)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
       - name: Generate Allure report
         if: always()
         run: |
