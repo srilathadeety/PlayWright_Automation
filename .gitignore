@@ -9,6 +9,10 @@ blob-report/
 playwright/.cache/
 playwright/.auth/
 
+# Allure output
+allure-results/
+allure-report/
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
