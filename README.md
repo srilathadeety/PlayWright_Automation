@@ -105,9 +105,49 @@ npx playwright test --workers=2
 - Assertions are done with Playwright `expect` to make the suite resilient and readable.
 - Failure screenshots and videos are enabled through the Playwright config for easier debugging.
 
+## Allure reporting
+
+The Playwright configuration includes the Allure reporter in addition to the standard HTML reporter.
+
+Generate and open the Allure report locally:
+
+```bash
+npx playwright test
+npx allure generate allure-results --clean -o allure-report
+npx allure open allure-report
+```
+
+If you want to view the generated report through a local web server instead of the Allure launcher:
+
+```bash
+python -m http.server 8000
+```
+
+Then open `http://localhost:8000` in your browser.
+
+To view the downloaded `allure-report` artifact from GitHub Actions:
+
+1. Download the `allure-report` artifact from the workflow run.
+2. Extract the ZIP locally.
+3. From the extracted folder, run:
+
+```bash
+python -m http.server 8000
+```
+
+4. Open `http://localhost:8000` in your browser.
+
+Do not open `index.html` directly from the downloaded artifact, because the Allure report loads its data through browser fetch requests and needs an HTTP server context.
+
 ## CI
 
 The repository includes GitHub Actions support for running the Playwright suite in CI.
+
+The workflow uploads these artifacts for each run:
+
+- `allure-report` — generated Allure HTML report
+- `allure-results` — raw Allure result files
+- `playwright-report` — standard Playwright HTML report
 
 Recommended repository secrets:
 

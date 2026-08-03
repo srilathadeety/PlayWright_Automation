@@ -46,6 +46,39 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test
 
+      - name: Get previous successful workflow run id
+        id: previous-run
+        if: always()
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const { data } = await github.rest.actions.listWorkflowRuns({
+              owner,
+              repo,
+              workflow_id: 'playwright.yml',
+              per_page: 20,
+              status: 'completed'
+            });
+
+            const previousRun = data.workflow_runs
+              .filter(run => run.id !== context.runId)
+              .find(run => run.conclusion === 'success' || run.conclusion === 'failure');
+
+            core.setOutput('run_id', previousRun ? previousRun.id.toString() : '');
+
+      - name: Download previous Allure history
+        if: always() && steps.previous-run.outputs.run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-history
+          path: allure-history
+          run-id: ${{ steps.previous-run.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
       - name: Set up Java (required by Allure)
         uses: actions/setup-java@v4
         with:
@@ -55,9 +88,10 @@ jobs:
       - name: Generate Allure report
         if: always()
         run: |
+          mkdir -p allure-history
           if [ -d "allure-results" ] && [ "$(ls -A allure-results 2>/dev/null)" ]; then
             echo "Found allure-results, generating report..."
-            npx -p allure-commandline@2.x allure generate allure-results --clean -o allure-report
+            npx -p allure-commandline@2.x allure generate allure-results --history-path allure-history --clean -o allure-report
           else
             echo "No allure-results found — skipping Allure report generation"
           fi
@@ -68,6 +102,16 @@ jobs:
         with:
           name: allure-report
           path: allure-report/
+          if-no-files-found: warn
+          retention-days: 14
+        continue-on-error: true
+
+      - name: Upload Allure history
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-history
+          path: allure-report/history/
           if-no-files-found: warn
           retention-days: 14
         continue-on-error: true
