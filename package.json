@@ -3,7 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "allure:generate": "npx allure generate allure-results --clean -o .\\allure-report",
+    "allure:open": "powershell -Command \"$port = 8000 + (Get-Random -Minimum 1 -Maximum 100); while (Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue) { $port = 8000 + (Get-Random -Minimum 1 -Maximum 100) }; if (-not (Test-Path '.\\allure-report\\index.html')) { Write-Host 'Allure report not found. Run npm run allure:generate first.'; exit 1 }; Start-Process python -ArgumentList '-m','http.server',$port,'-d','.\\allure-report'; Start-Sleep -Milliseconds 1500; Write-Host \"Opening Allure report on http://127.0.0.1:$port\"; Start-Process \"http://127.0.0.1:$port\"\"",
+    "allure:serve": "powershell -Command \"Set-Location .\\allure-report; python -m http.server 8001\"",
+    "allure:report": "npm run allure:generate && npm run allure:open",
+    "allure:run": "npm run test && npm run allure:generate && npm run allure:open"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

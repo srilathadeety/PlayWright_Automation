@@ -85,6 +85,26 @@ Generate the HTML report:
 npx playwright show-report
 ```
 
+Run the current report workflow with the helper npm scripts:
+
+```bash
+npm run test
+npm run allure:generate
+npm run allure:open
+```
+
+Or run the full local Allure flow in one command:
+
+```bash
+npm run allure:run
+```
+
+Current local behavior:
+
+- `npm run allure:run` executes the Playwright suite, generates the Allure HTML report, and opens it through a temporary local HTTP server.
+- The earlier comparison/history workflow has been removed from the active flow because it was not producing a reliable trend view.
+- The current setup is intentionally focused on a stable single-report workflow.
+
 ## Parallel execution
 
 - Local runs are configured to execute test files in parallel for faster feedback.
@@ -109,7 +129,15 @@ npx playwright test --workers=2
 
 The Playwright configuration includes the Allure reporter in addition to the standard HTML reporter.
 
-Generate and open the Allure report locally:
+Current working local flow:
+
+```bash
+npm run allure:run
+```
+
+This command runs the regression suite, generates the current Allure report, and opens the report in the browser through a temporary local HTTP server.
+
+If you want to run the steps manually instead:
 
 ```bash
 npx playwright test
@@ -117,7 +145,7 @@ npx allure generate allure-results --clean -o allure-report
 npx allure open allure-report
 ```
 
-If you want to view the generated report through a local web server instead of the Allure launcher:
+If you want to view the generated report through a plain local web server instead of the Allure launcher:
 
 ```bash
 python -m http.server 8000
@@ -138,6 +166,8 @@ python -m http.server 8000
 4. Open `http://localhost:8000` in your browser.
 
 Do not open `index.html` directly from the downloaded artifact, because the Allure report loads its data through browser fetch requests and needs an HTTP server context.
+
+Current note: the historical trend/comparison workflow is not part of the active local script path. The repository is currently optimized around a stable, single-report run rather than a history-based comparison view.
 
 ## CI
 
