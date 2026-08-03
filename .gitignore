@@ -12,6 +12,8 @@ playwright/.auth/
 # Allure output
 allure-results/
 allure-report/
+allure-history/
+
 
 # Logs
 npm-debug.log*
